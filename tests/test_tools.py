@@ -12,20 +12,27 @@ def test_picks_shortcut_automatically():
     assert out["found"]
     assert out["solution"]["technique"] == "add_9"
     assert out["solution"]["answer"] == 56
+    assert out["other_applicable_shortcuts"] == ["add_nines"]
+
+
+def test_picks_add_nines_for_99():
+    out = tools.dispatch("solve_with_shortcut", {"a": 47, "operation": "+", "b": 99})
+    assert out["solution"]["technique"] == "add_nines"
+    assert out["solution"]["answer"] == 146
 
 
 def test_no_shortcut_still_returns_answer():
-    out = tools.dispatch("solve_with_shortcut", {"a": 47, "operation": "+", "b": 8})
+    out = tools.dispatch("solve_with_shortcut", {"a": 150, "operation": "+", "b": 60})
     assert out == {
-        "problem": "47 + 8",
+        "problem": "150 + 60",
         "found": False,
-        "answer": 55,
+        "answer": 210,
         "message": "No known shortcut applies to this problem.",
     }
 
 
 def test_explicit_technique_that_does_not_apply():
-    out = tools.dispatch("solve_with_shortcut", {"a": 47, "operation": "+", "b": 8, "technique": "add_9"})
+    out = tools.dispatch("solve_with_shortcut", {"a": 150, "operation": "+", "b": 60, "technique": "add_9"})
     assert not out["found"]
     assert out["applicable_shortcuts"] == []
 

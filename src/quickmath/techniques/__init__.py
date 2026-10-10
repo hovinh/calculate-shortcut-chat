@@ -1,2 +1,6 @@
 # Import every technique module here so it registers itself.
 from quickmath.techniques import add_9  # noqa: F401
+from quickmath.techniques import add_nines  # noqa: F401
+from quickmath.techniques import subtract_from_nines  # noqa: F401
+from quickmath.techniques import subtract_from_power_of_10  # noqa: F401
+from quickmath.techniques import split_to_round  # noqa: F401
