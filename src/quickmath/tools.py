@@ -1,6 +1,7 @@
 """Tool layer exposed to the LLM agent (OpenAI / Azure OpenAI function-calling format).
 
-The LLM's only job is to translate the user's question into (a, operation, b).
+The LLM's only job is to translate the user's question into (a, operation, b),
+or (first term, "series", last term, step) for a sum like 1 + 2 + … + 100.
 Choosing *which* shortcut to use is done here, deterministically, so the agent
 can't pick a trick that doesn't apply.
 """
@@ -16,9 +17,17 @@ from quickmath.models import Operation, Problem
 
 
 class SolveArgs(BaseModel):
-    a: int = Field(description="First operand, exactly as written in the question.")
-    operation: Operation = Field(description="Arithmetic operation.")
-    b: int = Field(description="Second operand, exactly as written in the question.")
+    a: int = Field(description="First operand, exactly as written in the question. For a series: its first term.")
+    operation: Operation = Field(
+        description="Arithmetic operation. Use 'series' for the sum of numbers that go up by the same step, "
+        "e.g. 1 + 2 + … + 100, or 'the first 10 odd numbers' (1 + 3 + … + 19)."
+    )
+    b: int = Field(description="Second operand, exactly as written in the question. For a series: its last term.")
+    step: int = Field(
+        default=1,
+        description="Only for 'series': the gap between terms, e.g. 1 for 1 + 2 + 3 + …, "
+        "2 for 2 + 4 + 6 + … or 1 + 3 + 5 + ….",
+    )
     technique: str | None = Field(
         default=None,
         description="Only set this if the user explicitly asks for a specific shortcut "
@@ -26,8 +35,10 @@ class SolveArgs(BaseModel):
     )
 
 
-def solve_with_shortcut(a: int, operation: str, b: int, technique: str | None = None) -> dict[str, Any]:
-    problem = Problem(a=a, op=Operation(operation), b=b)
+def solve_with_shortcut(
+    a: int, operation: str, b: int, step: int = 1, technique: str | None = None
+) -> dict[str, Any]:
+    problem = Problem(a=a, op=Operation(operation), b=b, step=step)
     candidates = registry.find_applicable(problem)
     names = [t.name for t in candidates]
     if technique is not None and technique not in names:
@@ -67,7 +78,8 @@ def tool_specs() -> list[dict[str, Any]]:
             "type": "function",
             "function": {
                 "name": "solve_with_shortcut",
-                "description": "Explain step by step how to compute `a <operation> b` mentally using "
+                "description": "Explain step by step how to compute `a <operation> b` (or the sum of a "
+                "series from a to b) mentally using "
                 "the best matching shortcut. Returns verified steps and the answer. "
                 "Always call this for a calculation question instead of computing yourself.",
                 "parameters": SolveArgs.model_json_schema(),
@@ -96,6 +108,6 @@ def dispatch(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         if schema is None:
             return func()
         args = schema.model_validate(arguments)
-        return func(a=args.a, operation=args.operation.value, b=args.b, technique=args.technique)
+        return func(a=args.a, operation=args.operation.value, b=args.b, step=args.step, technique=args.technique)
     except (ValidationError, ValueError, RuntimeError) as e:
         return {"error": str(e)}

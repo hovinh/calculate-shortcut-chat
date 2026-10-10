@@ -27,7 +27,8 @@ flowchart LR
 | Agent | `src/quickmath/agent/workflow.py` | The loop: call LLM, run requested tools, feed results back, repeat until the LLM answers (max 5 rounds). Yields events so the UI can show each step. |
 | UI | `app.py` | Chat interface with a live, collapsible agent trace. |
 
-**Who decides what.** The LLM only turns the question into `(a, operation, b)`.
+**Who decides what.** The LLM only turns the question into `(a, operation, b)`, or
+`(first, "series", last, step)` for a sum like `1 + 2 + … + 100`.
 Choosing the shortcut is done in Python, so the agent cannot pick a trick that
 doesn't apply or invent arithmetic.
 

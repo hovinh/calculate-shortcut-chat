@@ -9,7 +9,13 @@ import streamlit as st
 from quickmath import tools
 from quickmath.agent import ConfigError, FinalAnswer, ToolCall, ToolResult, TutorAgent, load_client
 
-EXAMPLES = ["What is 47 + 9?", "How do I add 9 + 386 quickly?", "Work out 120 + 9 + 9", "What shortcuts do you know?"]
+EXAMPLES = [
+    "What is 47 + 9?",
+    "How do I add 9 + 386 quickly?",
+    "Work out 120 + 9 + 9",
+    "Add up 1 + 2 + … + 100",
+    "What shortcuts do you know?",
+]
 
 st.set_page_config(page_title="Quick Math Coach", page_icon="🧮")
 

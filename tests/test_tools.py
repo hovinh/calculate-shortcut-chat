@@ -21,6 +21,23 @@ def test_picks_add_nines_for_99():
     assert out["solution"]["answer"] == 146
 
 
+def test_series():
+    out = tools.dispatch("solve_with_shortcut", {"a": 1, "operation": "series", "b": 19, "step": 2})
+    assert out["solution"]["technique"] == "sum_odds"
+    assert out["solution"]["problem"] == "1 + 3 + 5 + … + 19"
+    assert out["solution"]["answer"] == 100
+
+
+def test_series_step_defaults_to_1():
+    out = tools.dispatch("solve_with_shortcut", {"a": 1, "operation": "series", "b": 100})
+    assert out["solution"]["answer"] == 5050
+
+
+def test_invalid_series_returns_error():
+    out = tools.dispatch("solve_with_shortcut", {"a": 1, "operation": "series", "b": 10, "step": 2})
+    assert "not reached" in out["error"]
+
+
 def test_no_shortcut_still_returns_answer():
     out = tools.dispatch("solve_with_shortcut", {"a": 150, "operation": "+", "b": 60})
     assert out == {
