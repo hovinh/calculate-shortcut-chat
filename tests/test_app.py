@@ -11,7 +11,8 @@ from test_workflow import FakeClient, completion
 
 
 @pytest.fixture
-def fake_llm(monkeypatch):
+def fake_llm(monkeypatch, tmp_path):
+    monkeypatch.setenv("QUICKMATH_LOG_DIR", str(tmp_path))
     client = FakeClient(
         completion(tool_calls=[("solve_with_shortcut", json.dumps({"a": 47, "operation": "+", "b": 9}))]),
         completion(content="Add 10, take 1: **56**"),
@@ -30,3 +31,29 @@ def test_chat_round_trip(fake_llm):
     assert not at.exception
     assert "Add 10, take 1: **56**" in [m.value for m in at.main.markdown]
     assert [m["role"] for m in at.session_state.messages] == ["user", "assistant", "tool", "assistant"]
+
+
+def test_chat_is_logged(fake_llm, tmp_path):
+    at = AppTest.from_file("../app.py", default_timeout=10).run()
+    at.chat_input[0].set_value("What is 47 + 9?").run()
+    assert not at.exception
+
+    [path] = tmp_path.glob("*.json")
+    [turn] = json.loads(path.read_text(encoding="utf-8"))["turns"]
+    assert turn["question"] == "What is 47 + 9?"
+    assert turn["answer"] == "Add 10, take 1: **56**"
+    assert turn["tool_calls"][0]["name"] == "solve_with_shortcut"
+    assert turn["tool_calls"][0]["result"]["solution"]["answer"] == 56
+    assert str(path) in at.sidebar.caption[-1].value
+
+
+def test_feedback_is_logged(fake_llm, tmp_path):
+    at = AppTest.from_file("../app.py", default_timeout=10).run()
+    at.chat_input[0].set_value("What is 47 + 9?").run()
+    at.get("feedback")[0].set_value(0).run()  # 👎
+    at.text_input[0].set_value("Explain why 9 = 10 − 1").run()
+    assert not at.exception
+
+    [path] = tmp_path.glob("*.json")
+    [turn] = json.loads(path.read_text(encoding="utf-8"))["turns"]
+    assert turn["feedback"] == {"rating": "down", "note": "Explain why 9 = 10 − 1"}

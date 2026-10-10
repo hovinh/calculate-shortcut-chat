@@ -51,6 +51,16 @@ streamlit run app.py
 pytest                # offline: uses a fake LLM, no API calls
 ```
 
+## Chat logs and feedback
+
+Every chat is saved to `logs/<date>-<time>-<id>.json` (git-ignored; change the folder with
+`QUICKMATH_LOG_DIR`). The sidebar shows the current file. Each turn records the question, the tool
+calls with their results, the answer (or error), and any 👍/👎 rating with a note left under the answer.
+The file also records the model and the git commit, since prompts and shortcuts change over time.
+
+To report a problem, rate the answer and write what should change, then point Claude Code (or anyone)
+at the file, e.g. *"see the 👎 feedback in logs/20261010-195851-a1b2c3.json"*.
+
 ## Adding a shortcut
 
 1. Create `src/quickmath/techniques/<name>.py` with a `@register`ed `Technique` subclass
