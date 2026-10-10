@@ -1,0 +1,11 @@
+-e .
+
+# Runtime
+pydantic>=2
+openai
+python-dotenv
+streamlit
+
+# Dev / test
+pytest
+hypothesis
