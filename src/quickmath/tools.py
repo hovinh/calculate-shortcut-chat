@@ -13,16 +13,16 @@ from typing import Any
 from pydantic import BaseModel, Field, ValidationError
 
 from quickmath import registry
-from quickmath.models import Operation, Problem
+from quickmath.models import Number, Operation, Problem, json_number
 
 
 class SolveArgs(BaseModel):
-    a: int = Field(description="First operand, exactly as written in the question. For a series: its first term.")
+    a: Number = Field(description="First operand, exactly as written in the question. For a series: its first term.")
     operation: Operation = Field(
         description="Arithmetic operation. Use 'series' for the sum of numbers that go up by the same step, "
         "e.g. 1 + 2 + … + 100, or 'the first 10 odd numbers' (1 + 3 + … + 19)."
     )
-    b: int = Field(description="Second operand, exactly as written in the question. For a series: its last term.")
+    b: Number = Field(description="Second operand, exactly as written in the question. For a series: its last term.")
     step: int = Field(
         default=1,
         description="Only for 'series': the gap between terms, e.g. 1 for 1 + 2 + 3 + …, "
@@ -36,7 +36,7 @@ class SolveArgs(BaseModel):
 
 
 def solve_with_shortcut(
-    a: int, operation: str, b: int, step: int = 1, technique: str | None = None
+    a: int | float | str, operation: str, b: int | float | str, step: int = 1, technique: str | None = None
 ) -> dict[str, Any]:
     problem = Problem(a=a, op=Operation(operation), b=b, step=step)
     candidates = registry.find_applicable(problem)
@@ -52,13 +52,13 @@ def solve_with_shortcut(
         return {
             "problem": str(problem),
             "found": False,
-            "answer": problem.exact(),
+            "answer": json_number(problem.exact()),
             "message": "No known shortcut applies to this problem.",
         }
     chosen = registry.get(technique) if technique else candidates[0]
     return {
         "found": True,
-        "solution": chosen.solve(problem).model_dump(),
+        "solution": chosen.solve(problem).model_dump(mode="json"),
         "other_applicable_shortcuts": [t.name for t in candidates if t is not chosen],
     }
 

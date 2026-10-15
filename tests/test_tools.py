@@ -28,6 +28,24 @@ def test_multiply_by_power_of_10():
     assert out["solution"]["answer"] == 4700
 
 
+def test_multiply_decimal_by_power_of_10():
+    out = tools.dispatch("solve_with_shortcut", {"a": 3.75, "operation": "*", "b": 10})
+    assert out["solution"]["technique"] == "multiply_decimal_by_power_of_10"
+    assert out["solution"]["answer"] == 37.5
+    json.dumps(out)  # decimals must reach the LLM as plain JSON numbers
+
+
+def test_decimal_without_shortcut_still_returns_answer():
+    out = tools.dispatch("solve_with_shortcut", {"a": 0.1, "operation": "+", "b": 0.2})
+    assert out["answer"] == 0.3  # exact, not 0.30000000000000004
+    json.dumps(out)
+
+
+def test_series_must_be_whole_numbers():
+    out = tools.dispatch("solve_with_shortcut", {"a": 0.5, "operation": "series", "b": 10.5})
+    assert "whole-number" in out["error"]
+
+
 def test_series():
     out = tools.dispatch("solve_with_shortcut", {"a": 1, "operation": "series", "b": 19, "step": 2})
     assert out["solution"]["technique"] == "sum_odds"

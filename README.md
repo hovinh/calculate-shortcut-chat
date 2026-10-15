@@ -65,7 +65,8 @@ at the file, e.g. *"see the 👎 feedback in logs/20261010-195851-a1b2c3.json"*.
 
 1. Create `src/quickmath/techniques/<name>.py` with a `@register`ed `Technique` subclass
    (see `add_9.py`): set `name`, `title`, `rule`, `operation`, `priority`, and implement
-   `_applies()` and `steps()`.
+   `_applies()` and `steps()`. Operands are `int`, or `Decimal` for numbers like 3.75; a technique
+   only sees decimals if it sets `decimals = True`.
 2. Import it in `src/quickmath/techniques/__init__.py`.
 3. Add tests. A Hypothesis test comparing against plain arithmetic catches most mistakes.
 

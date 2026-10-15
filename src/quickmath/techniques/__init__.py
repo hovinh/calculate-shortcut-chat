@@ -11,3 +11,4 @@ from quickmath.techniques import sum_consecutive  # noqa: F401
 from quickmath.techniques import sum_evens  # noqa: F401
 from quickmath.techniques import sum_odds  # noqa: F401
 from quickmath.techniques import multiply_by_power_of_10  # noqa: F401
+from quickmath.techniques import multiply_decimal_by_power_of_10  # noqa: F401

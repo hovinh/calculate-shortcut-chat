@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from decimal import Decimal
 from typing import ClassVar
 
 from quickmath.models import Operation, Problem, Solution, Step
@@ -20,15 +21,21 @@ class Technique(ABC):
     # Higher wins when several techniques apply. Narrow, special-case tricks
     # should rank above general ones (e.g. "add 9" above "round and compensate").
     priority: ClassVar[int] = 0
+    # Most tricks work on digits of whole numbers; set True only if `_applies` and `steps` handle decimals.
+    decimals: ClassVar[bool] = False
 
     def applies(self, problem: Problem) -> bool:
-        return problem.op == self.operation and self._applies(problem)
+        return (
+            problem.op == self.operation
+            and (self.decimals or problem.is_whole())
+            and self._applies(problem)
+        )
 
     @abstractmethod
     def _applies(self, problem: Problem) -> bool: ...
 
     @abstractmethod
-    def steps(self, problem: Problem) -> tuple[list[Step], int]:
+    def steps(self, problem: Problem) -> tuple[list[Step], int | Decimal]:
         """Return the worked steps and the final answer."""
 
     def solve(self, problem: Problem) -> Solution:
