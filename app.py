@@ -19,6 +19,7 @@ EXAMPLES = [
     "How do I add 9 + 386 quickly?",
     "Work out 120 + 9 + 9",
     "Add up 1 + 2 + … + 100",
+    "What is 47 × 1000?",
     "What shortcuts do you know?",
 ]
 

@@ -21,6 +21,13 @@ def test_picks_add_nines_for_99():
     assert out["solution"]["answer"] == 146
 
 
+def test_multiply_by_power_of_10():
+    out = tools.dispatch("solve_with_shortcut", {"a": 47, "operation": "*", "b": 100})
+    assert out["solution"]["technique"] == "multiply_by_power_of_10"
+    assert out["solution"]["problem"] == "47 × 100"
+    assert out["solution"]["answer"] == 4700
+
+
 def test_series():
     out = tools.dispatch("solve_with_shortcut", {"a": 1, "operation": "series", "b": 19, "step": 2})
     assert out["solution"]["technique"] == "sum_odds"

@@ -70,3 +70,9 @@ at the file, e.g. *"see the 👎 feedback in logs/20261010-195851-a1b2c3.json"*.
 3. Add tests. A Hypothesis test comparing against plain arithmetic catches most mistakes.
 
 The tool specs, agent and UI pick it up automatically.
+
+## TODO
+
+- [ ] **Experiment to rank shortcut priority** (once all shortcuts are implemented). Today `priority`
+  is hand-set (narrow tricks at 10, general ones at 0), so when several shortcuts apply the choice is
+  a guess. Set up an experiment to decide the ranking from evidence instead.
