@@ -27,6 +27,7 @@ EXAMPLES = [
     "What is 1103 − 38?",
     "What is 48 × 5?",
     "What is 47 ÷ 5?",
+    "What is 6218 − 4753?",
     "What shortcuts do you know?",
 ]
 

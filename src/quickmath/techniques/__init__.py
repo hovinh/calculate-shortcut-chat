@@ -18,3 +18,4 @@ from quickmath.techniques import subtract_in_steps  # noqa: F401
 from quickmath.techniques import subtract_by_simplifying  # noqa: F401
 from quickmath.techniques import multiply_by_5  # noqa: F401
 from quickmath.techniques import divide_by_5  # noqa: F401
+from quickmath.techniques import subtract_in_groups  # noqa: F401
