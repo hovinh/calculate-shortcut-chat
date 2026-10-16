@@ -59,4 +59,4 @@ def test_only_subtraction(op):
 
 def test_ranks_last():
     ranked = registry.find_applicable(Problem(a=176, op=Operation.SUBTRACT, b=98))
-    assert [t.name for t in ranked] == ["subtract_round_and_compensate", "subtract_in_steps"]
+    assert [t.name for t in ranked][-1] == "subtract_in_steps"

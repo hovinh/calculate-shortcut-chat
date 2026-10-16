@@ -23,7 +23,7 @@ class SubtractRoundAndCompensate(Technique):
     )
     operation = Operation.SUBTRACT
     # General fallback; the narrower subtract-from-9s/10s tricks rank above it.
-    priority = 1
+    priority = 2
 
     def _applies(self, problem: Problem) -> bool:
         return _target(problem) is not None
