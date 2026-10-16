@@ -17,7 +17,10 @@ from quickmath.models import Number, Operation, Problem, json_number
 
 
 class SolveArgs(BaseModel):
-    a: Number = Field(description="First operand, exactly as written in the question. For a series: its first term.")
+    a: Number = Field(
+        description="First operand, exactly as written in the question. For '/': the number being divided. "
+        "For a series: its first term."
+    )
     operation: Operation = Field(
         description="Arithmetic operation. Use 'series' for the sum of numbers that go up by the same step, "
         "e.g. 1 + 2 + … + 100, or 'the first 10 odd numbers' (1 + 3 + … + 19)."

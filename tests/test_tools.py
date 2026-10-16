@@ -35,6 +35,25 @@ def test_multiply_decimal_by_power_of_10():
     json.dumps(out)  # decimals must reach the LLM as plain JSON numbers
 
 
+def test_divide_by_power_of_10():
+    out = tools.dispatch("solve_with_shortcut", {"a": 4567, "operation": "/", "b": 100})
+    assert out["solution"]["technique"] == "divide_by_power_of_10"
+    assert out["solution"]["problem"] == "4567 ÷ 100"
+    assert out["solution"]["answer"] == 45.67
+    json.dumps(out)
+
+
+def test_division_without_shortcut_still_returns_answer():
+    out = tools.dispatch("solve_with_shortcut", {"a": 7, "operation": "/", "b": 4})
+    assert not out["found"]
+    assert out["answer"] == 1.75
+
+
+def test_divide_by_zero_returns_error():
+    out = tools.dispatch("solve_with_shortcut", {"a": 7, "operation": "/", "b": 0})
+    assert "divide by zero" in out["error"]
+
+
 def test_decimal_without_shortcut_still_returns_answer():
     out = tools.dispatch("solve_with_shortcut", {"a": 0.1, "operation": "+", "b": 0.2})
     assert out["answer"] == 0.3  # exact, not 0.30000000000000004
@@ -81,7 +100,7 @@ def test_explicit_technique_that_does_not_apply():
 
 def test_bad_arguments_return_error():
     assert "error" in tools.dispatch("solve_with_shortcut", {"a": "abc", "operation": "+", "b": 9})
-    assert "error" in tools.dispatch("solve_with_shortcut", {"a": 1, "operation": "/", "b": 9})
+    assert "error" in tools.dispatch("solve_with_shortcut", {"a": 1, "operation": "%", "b": 9})
     assert "error" in tools.dispatch("nope", {})
 
 

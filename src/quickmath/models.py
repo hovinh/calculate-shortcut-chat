@@ -49,12 +49,23 @@ class Operation(str, Enum):
     ADD = "+"
     SUBTRACT = "-"
     MULTIPLY = "*"
+    DIVIDE = "/"
     # Sum of the series a + (a + step) + (a + 2·step) + … + b.
     SERIES = "series"
 
 
-_SYMBOLS = {Operation.ADD: "+", Operation.SUBTRACT: "−", Operation.MULTIPLY: "×"}
-_FUNCS = {Operation.ADD: operator.add, Operation.SUBTRACT: operator.sub, Operation.MULTIPLY: operator.mul}
+def _divide(a: int | Decimal, b: int | Decimal) -> Decimal:
+    # Decimal, not int / int, which would give an inexact float.
+    return Decimal(a) / Decimal(b)
+
+
+_SYMBOLS = {Operation.ADD: "+", Operation.SUBTRACT: "−", Operation.MULTIPLY: "×", Operation.DIVIDE: "÷"}
+_FUNCS = {
+    Operation.ADD: operator.add,
+    Operation.SUBTRACT: operator.sub,
+    Operation.MULTIPLY: operator.mul,
+    Operation.DIVIDE: _divide,
+}
 
 
 class Problem(BaseModel):
@@ -65,7 +76,9 @@ class Problem(BaseModel):
     step: int = 1
 
     @model_validator(mode="after")
-    def _check_series(self) -> Problem:
+    def _check(self) -> Problem:
+        if self.op == Operation.DIVIDE and self.b == 0:
+            raise ValueError("Cannot divide by zero.")
         if self.op == Operation.SERIES:
             if not self.is_whole():
                 raise ValueError("A series needs whole-number terms.")
