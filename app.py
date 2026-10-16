@@ -25,6 +25,7 @@ EXAMPLES = [
     "What is 13 × 14?",
     "What is 83 − 27?",
     "What is 1103 − 38?",
+    "What is 48 × 5?",
     "What shortcuts do you know?",
 ]
 
