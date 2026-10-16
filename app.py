@@ -22,6 +22,7 @@ EXAMPLES = [
     "What is 47 × 1000?",
     "What is 3.75 × 100?",
     "What is 4567 ÷ 100?",
+    "What is 13 × 14?",
     "What shortcuts do you know?",
 ]
 
