@@ -34,6 +34,7 @@ EXAMPLES = [
     "What is 35 × 35?",
     "What is 28 × 22?",
     "What is 47 × 47?",
+    "What is 300 × 300?",
     "What shortcuts do you know?",
 ]
 
