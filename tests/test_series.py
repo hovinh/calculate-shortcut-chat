@@ -10,6 +10,7 @@ consecutive = registry.get("sum_consecutive")
 evens = registry.get("sum_evens")
 odds = registry.get("sum_odds")
 from_a = registry.get("sum_consecutive_from_a")
+arithmetic = registry.get("sum_arithmetic_series")
 
 
 def series(a, b, step=1):
@@ -120,6 +121,46 @@ def test_from_a_always_matches_arithmetic(a, k):
     assert from_a.solve(series(a, a + k)).answer == series(a, a + k).exact()
 
 
+# ---- Shortcut 31: a series that goes up by the same difference ---------------------
+
+
+def test_arithmetic_worked_example():
+    sol = arithmetic.solve(series(2, 32, 3))
+    assert sol.problem == "2 + 5 + 8 + … + 32"
+    assert [s.say for s in sol.steps] == [
+        "Count the numbers: take the first from the last, divide by the difference, 3, and add 1",
+        "Add the first and last numbers and halve it",
+        "Multiply them",
+    ]
+    assert [s.expr for s in sol.steps] == ["(32 − 2) ÷ 3 + 1", "(2 + 32) ÷ 2", "11 × 17"]
+    assert [s.result for s in sol.steps] == [11, 17, 187]
+    assert sol.answer == 187
+    assert sol.verified
+
+
+def test_arithmetic_odd_ends_halve_the_count():
+    sol = arithmetic.solve(series(2, 35, 3))
+    assert [s.say for s in sol.steps][1:] == [
+        "Add the first and last numbers",
+        "37 is odd, so halve the count instead",
+        "Multiply them",
+    ]
+    assert [s.expr for s in sol.steps] == ["(35 − 2) ÷ 3 + 1", "2 + 35", "12 ÷ 2", "6 × 37"]
+    assert sol.answer == 222
+
+
+def test_arithmetic_negative_start():
+    sol = arithmetic.solve(series(-5, 10, 1))
+    assert [s.expr for s in sol.steps] == ["(10 − -5) ÷ 1 + 1", "-5 + 10", "16 ÷ 2", "8 × 5"]
+    assert sol.answer == 40
+
+
+@given(st.integers(-10**6, 10**6), st.integers(1, 10**4), st.integers(1, 1000))
+def test_arithmetic_always_matches_arithmetic(a, k, step):
+    b = a + k * step
+    assert arithmetic.solve(series(a, b, step)).answer == series(a, b, step).exact()
+
+
 # ---- Which shortcut applies --------------------------------------------------------
 
 
@@ -133,8 +174,8 @@ def test_from_a_always_matches_arithmetic(a, k):
         (11, 20, 1, "sum_consecutive_from_a"),
     ],
 )
-def test_each_series_has_one_shortcut(a, b, step, best):
-    assert [t.name for t in registry.find_applicable(series(a, b, step))] == [best]
+def test_narrow_series_shortcut_ranks_first(a, b, step, best):
+    assert [t.name for t in registry.find_applicable(series(a, b, step))] == [best, "sum_arithmetic_series"]
 
 
 @pytest.mark.parametrize(
@@ -144,15 +185,20 @@ def test_each_series_has_one_shortcut(a, b, step, best):
         (-5, 10, 1),  # starts below 0
         (3, 21, 2),  # odd numbers not starting at 1
         (4, 20, 2),  # even numbers not starting at 2
-        (1, 100, 3),
-        (1, 1, 1),  # a single term
-        (7, 7, 1),  # a single term
+        (2, 32, 3),
     ],
 )
-def test_no_series_shortcut(a, b, step):
+def test_only_arithmetic_series(a, b, step):
+    assert [t.name for t in registry.find_applicable(series(a, b, step))] == ["sum_arithmetic_series"]
+
+
+@pytest.mark.parametrize("a, b, step", [(1, 1, 1), (7, 7, 3)])
+def test_no_shortcut_for_a_single_term(a, b, step):
     assert registry.find_applicable(series(a, b, step)) == []
 
 
-@pytest.mark.parametrize("name", ["sum_consecutive", "sum_evens", "sum_odds", "sum_consecutive_from_a"])
+@pytest.mark.parametrize(
+    "name", ["sum_consecutive", "sum_evens", "sum_odds", "sum_consecutive_from_a", "sum_arithmetic_series"]
+)
 def test_only_series(name):
     assert not registry.get(name).applies(Problem(a=1, op=Operation.ADD, b=100))

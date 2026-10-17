@@ -38,6 +38,7 @@ EXAMPLES = [
     "What is 41 × 41?",
     "What is 28 × 32?",
     "Add up 11 + 12 + … + 20",
+    "Add up 2 + 5 + 8 + … + 32",
     "What shortcuts do you know?",
 ]
 
