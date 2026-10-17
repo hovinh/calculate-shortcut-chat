@@ -22,3 +22,4 @@ from quickmath.techniques import subtract_in_groups  # noqa: F401
 from quickmath.techniques import multiply_by_9  # noqa: F401
 from quickmath.techniques import multiply_by_11  # noqa: F401
 from quickmath.techniques import multiply_by_25  # noqa: F401
+from quickmath.techniques import square_ending_in_5  # noqa: F401
