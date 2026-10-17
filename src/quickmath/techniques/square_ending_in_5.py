@@ -12,8 +12,9 @@ class SquareEndingIn5(Technique):
         "by one more than itself, and put 25 after the result: 35 × 35 = 3 × 4 | 25 = 1225."
     )
     operation = Operation.MULTIPLY
-    # Simpler than multiply_teens for 15 × 15 and multiply_by_25 for 25 × 25.
-    priority = 6
+    # A special case of multiply_ends_add_to_10 that needs no multiplying of last digits; also
+    # simpler than multiply_teens for 15 × 15 and multiply_by_25 for 25 × 25.
+    priority = 8
 
     def _applies(self, problem: Problem) -> bool:
         a, b = problem.a, problem.b

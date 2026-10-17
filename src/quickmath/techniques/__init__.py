@@ -23,3 +23,4 @@ from quickmath.techniques import multiply_by_9  # noqa: F401
 from quickmath.techniques import multiply_by_11  # noqa: F401
 from quickmath.techniques import multiply_by_25  # noqa: F401
 from quickmath.techniques import square_ending_in_5  # noqa: F401
+from quickmath.techniques import multiply_ends_add_to_10  # noqa: F401

@@ -50,4 +50,4 @@ def test_only_multiplication(op):
 )
 def test_ranks_above_other_tricks(n, other):
     names = [t.name for t in registry.find_applicable(Problem(a=n, op=Operation.MULTIPLY, b=n))]
-    assert names == ["square_ending_in_5", other]
+    assert names == ["square_ending_in_5", "multiply_ends_add_to_10", other]
