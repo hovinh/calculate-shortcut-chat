@@ -30,6 +30,7 @@ EXAMPLES = [
     "What is 6218 − 4753?",
     "What is 47 × 9?",
     "What is 2341 × 11?",
+    "What is 48 × 25?",
     "What shortcuts do you know?",
 ]
 
