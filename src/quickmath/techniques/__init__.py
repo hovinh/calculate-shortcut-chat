@@ -28,3 +28,4 @@ from quickmath.techniques import square_near_50  # noqa: F401
 from quickmath.techniques import square_ending_in_0  # noqa: F401
 from quickmath.techniques import square_ending_in_1  # noqa: F401
 from quickmath.techniques import multiply_equidistant_from_10s  # noqa: F401
+from quickmath.techniques import sum_consecutive_from_a  # noqa: F401

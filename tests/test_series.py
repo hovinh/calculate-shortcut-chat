@@ -9,6 +9,7 @@ from quickmath.models import Operation, Problem
 consecutive = registry.get("sum_consecutive")
 evens = registry.get("sum_evens")
 odds = registry.get("sum_odds")
+from_a = registry.get("sum_consecutive_from_a")
 
 
 def series(a, b, step=1):
@@ -95,6 +96,30 @@ def test_odds_always_matches_arithmetic(n):
     assert odds.solve(series(1, 2 * n - 1, 2)).answer == series(1, 2 * n - 1, 2).exact()
 
 
+# ---- Shortcut 30: a + (a + 1) + … + b ---------------------------------------------
+
+
+def test_from_a_worked_example():
+    sol = from_a.solve(series(11, 20))
+    assert sol.problem == "11 + 12 + 13 + … + 20"
+    assert [s.say for s in sol.steps] == [
+        "Square the last number, 20",
+        "Square the first number, 11",
+        "Take 121 away from 400",
+        "Add the first and last numbers, 11 and 20",
+        "Then halve it",
+    ]
+    assert [s.expr for s in sol.steps] == ["20 × 20", "11 × 11", "400 − 121", "279 + 11 + 20", "310 ÷ 2"]
+    assert [s.result for s in sol.steps] == [400, 121, 279, 310, 155]
+    assert sol.answer == 155
+    assert sol.verified
+
+
+@given(st.integers(2, 10**6), st.integers(1, 10**6))
+def test_from_a_always_matches_arithmetic(a, k):
+    assert from_a.solve(series(a, a + k)).answer == series(a, a + k).exact()
+
+
 # ---- Which shortcut applies --------------------------------------------------------
 
 
@@ -104,6 +129,8 @@ def test_odds_always_matches_arithmetic(n):
         (1, 100, 1, "sum_consecutive"),
         (2, 50, 2, "sum_evens"),
         (1, 49, 2, "sum_odds"),
+        (2, 100, 1, "sum_consecutive_from_a"),
+        (11, 20, 1, "sum_consecutive_from_a"),
     ],
 )
 def test_each_series_has_one_shortcut(a, b, step, best):
@@ -113,17 +140,19 @@ def test_each_series_has_one_shortcut(a, b, step, best):
 @pytest.mark.parametrize(
     "a, b, step",
     [
-        (2, 100, 1),  # doesn't start at 1
+        (0, 100, 1),  # starts at 0, not a positive number
+        (-5, 10, 1),  # starts below 0
         (3, 21, 2),  # odd numbers not starting at 1
         (4, 20, 2),  # even numbers not starting at 2
         (1, 100, 3),
         (1, 1, 1),  # a single term
+        (7, 7, 1),  # a single term
     ],
 )
 def test_no_series_shortcut(a, b, step):
     assert registry.find_applicable(series(a, b, step)) == []
 
 
-@pytest.mark.parametrize("name", ["sum_consecutive", "sum_evens", "sum_odds"])
+@pytest.mark.parametrize("name", ["sum_consecutive", "sum_evens", "sum_odds", "sum_consecutive_from_a"])
 def test_only_series(name):
     assert not registry.get(name).applies(Problem(a=1, op=Operation.ADD, b=100))
